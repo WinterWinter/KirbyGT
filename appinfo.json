@@ -1,0 +1,140 @@
+{
+    "appKeys": {
+        "KEY_DATE": 5,
+        "KEY_ICON": 2,
+        "KEY_SCALE": 3,
+        "KEY_TEMPERATURE": 1
+    },
+    "capabilities": [
+        "location",
+        "configurable"
+    ],
+    "companyName": "Game Time",
+    "enableMultiJS": false,
+    "longName": "Kirby",
+    "projectType": "native",
+    "resources": {
+        "media": [
+            {
+                "file": "images/KRACKO.png",
+                "name": "KRACKO",
+                "targetPlatforms": null,
+                "type": "png"
+            },
+            {
+                "file": "images/MR_SHINE.png",
+                "name": "MR_SHINE",
+                "targetPlatforms": null,
+                "type": "png"
+            },
+            {
+                "file": "images/MR_BRIGHT.png",
+                "name": "MR_BRIGHT",
+                "targetPlatforms": null,
+                "type": "png"
+            },
+            {
+                "file": "images/FOREGROUND.png",
+                "name": "FOREGROUND",
+                "targetPlatforms": [
+                    "basalt"
+                ],
+                "type": "png"
+            },
+            {
+                "file": "data/KIRBY_SWORD.png",
+                "name": "KIRBY_SWORD",
+                "targetPlatforms": null,
+                "type": "raw"
+            },
+            {
+                "file": "data/KIRBY_MIKE.png",
+                "name": "KIRBY_MIKE",
+                "targetPlatforms": null,
+                "type": "raw"
+            },
+            {
+                "file": "data/KIRBY_HAMMER.png",
+                "name": "KIRBY_HAMMER",
+                "targetPlatforms": null,
+                "type": "raw"
+            },
+            {
+                "file": "data/KIRBY_FIRE.png",
+                "name": "KIRBY_FIRE",
+                "targetPlatforms": null,
+                "type": "raw"
+            },
+            {
+                "file": "data/KIRBY_CUTTER.png",
+                "name": "KIRBY_CUTTER",
+                "targetPlatforms": null,
+                "type": "raw"
+            },
+            {
+                "file": "data/KIRBY_BEAM.png",
+                "name": "KIRBY_BEAM",
+                "targetPlatforms": null,
+                "type": "raw"
+            },
+            {
+                "file": "data/KIRBY_SLEEP.png",
+                "name": "KIRBY_SLEEP",
+                "targetPlatforms": null,
+                "type": "raw"
+            },
+            {
+                "file": "images/FIRE.png",
+                "name": "FIRE",
+                "targetPlatforms": null,
+                "type": "png"
+            },
+            {
+                "file": "images/SLEEP.png",
+                "name": "SLEEP",
+                "targetPlatforms": null,
+                "type": "png"
+            },
+            {
+                "file": "images/MIKE.png",
+                "name": "MIKE",
+                "targetPlatforms": null,
+                "type": "png"
+            },
+            {
+                "file": "images/HAMMER.png",
+                "name": "HAMMER",
+                "targetPlatforms": null,
+                "type": "png"
+            },
+            {
+                "file": "images/SWORD.png",
+                "name": "SWORD",
+                "targetPlatforms": null,
+                "type": "png"
+            },
+            {
+                "file": "images/CUTTER.png",
+                "name": "CUTTER",
+                "targetPlatforms": null,
+                "type": "png"
+            },
+            {
+                "file": "images/BEAM.png",
+                "name": "BEAM",
+                "targetPlatforms": null,
+                "type": "png"
+            }
+        ]
+    },
+    "sdkVersion": "3",
+    "shortName": "Kirby",
+    "targetPlatforms": [
+        "basalt"
+    ],
+    "uuid": "2d81b6f1-3a4a-4375-8e51-a978a29648e6",
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": true
+    }
+}
