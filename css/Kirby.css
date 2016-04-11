@@ -740,7 +740,7 @@ button[disabled],
 	box-shadow: none !important;
 }
 .ui-noboxshadow .ui-btn:focus,
-.ui-noboxshadow .ui-focus {
+.ui-noboxshadow .ui-focus { 
 	outline-width: 1px;
 	outline-style: auto;
 }
