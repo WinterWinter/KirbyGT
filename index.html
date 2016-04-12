@@ -32,8 +32,8 @@
    </select>
 </p>
 
-<p></p>Step goal<br>
-<input id="stepGoal" type="range" class="item-slider" name="slider-1" value="10000" max="10000" min="1000" step="1000">
+<p></p>Step Goal<br>
+<input id="stepsgoal" type="range" class="item-slider" name="slider-1" value="10000" max="10000" min="1000" step="1000">
 </p>
   
 </p>
@@ -49,7 +49,7 @@
     <script>
     function getConfigData() {
     var scale = document.getElementById("scale");
-    var stepgoal = document.getElementById("stepGoal");
+    var stepgoal = document.getElementById("stepgoal");
  
     var options = {
       "scale": scale.options[scale.selectedIndex].value,
