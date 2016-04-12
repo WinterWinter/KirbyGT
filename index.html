@@ -51,7 +51,7 @@
  
     var options = {
       "scale": scale.options[scale.selectedIndex].value,
-      "stepsgoal": Goal.value,
+      "stepsgoal": parseInt(Goal.value),
     };
     // Save for next launch
     localStorage["scale"] = options["scale"];
