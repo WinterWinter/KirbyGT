@@ -32,6 +32,14 @@
    </select>
 </p>
 
+<p>Step Goal<br>
+<input id="stepGoal" type="range" class="item-slider" name="slider-1" value="10000" max="10000" min="1000" step="1000">
+<div class="item-input-wrapper item-slider-text">
+<input id="stepText" type="text" class="item-input" name="slider-1" value="10000">
+
+  
+</p>
+
 <br>
     <p>
 <fieldset class="ui-grid-a">
@@ -43,12 +51,15 @@
     <script>
     function getConfigData() {
     var scale = document.getElementById("scale");
+    var stepgoal = document.getElementById("stepGoal");
  
     var options = {
-      "scale": scale.options[scale.selectedIndex].value
+      "scale": scale.options[scale.selectedIndex].value,
+      "stepsgoal" : stepsgoal.options[stepsgoal.selectedIndex].value
     };
     // Save for next launch
     localStorage["scale"] = options["scale"];
+    localStorage["stepsgoal"] = options["stepsgoal"];
     console.log('Got options: ' + JSON.stringify(options));
     return options;
   }
@@ -73,9 +84,11 @@
         
           (function() {
     var scale = document.getElementById("scale");
+    var stepsgoal = document.getElementById("stepsgoal");
     // Load any previously saved configuration, if available
     if(localStorage["scale"]) {
       scale.value = localStorage["scale"];
+      stepsgoal.value = localStorage["stepsgoal"];
     }
   })();
   
