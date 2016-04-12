@@ -47,11 +47,11 @@
     <script>
     function getConfigData() {
     var scale = document.getElementById("scale");
-    var stepsgoal = document.getElementById("stepsgoal");
+    var Goal = document.getElementById("stepsgoal");
  
     var options = {
       "scale": scale.options[scale.selectedIndex].value,
-      "stepsgoal" : stepsgoal.options[stepsgoal.selectedIndex].value
+      "stepsgoal" : Goal.options[Goal.selectedIndex].value
     };
     // Save for next launch
     localStorage["scale"] = options["scale"];
@@ -80,7 +80,7 @@
         
           (function() {
     var scale = document.getElementById("scale");
-    var stepsgoal = document.getElementById("stepsgoal");
+    var Goal = document.getElementById("stepsgoal");
     // Load any previously saved configuration, if available
     if(localStorage["scale"]) {
       scale.value = localStorage["scale"];
