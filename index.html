@@ -55,7 +55,6 @@
     };
     // Save for next launch
     localStorage["scale"] = options["scale"];
-    localStorage["stepsgoal"] = options["stepsgoal"];
     console.log('Got options: ' + JSON.stringify(options));
     return options;
   }
@@ -80,11 +79,9 @@
         
           (function() {
     var scale = document.getElementById("scale");
-    var Goal = document.getElementById("stepsgoal");
     // Load any previously saved configuration, if available
     if(localStorage["scale"]) {
       scale.value = localStorage["scale"];
-      stepsgoal.value = localStorage["stepsgoal"];
     }
   })();
   
