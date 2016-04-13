@@ -37,12 +37,6 @@
 </p>
 <br>
 
-<p>City Name<br>
-<input id="city" type="text" value=" ">
-</p>
-<br>
-
-
 <p>
 <fieldset class="ui-grid-a">
 <div class="ui-block-a"><button type="submit" data-theme="b" id="b-cancel">Cancel</button></div>
@@ -54,16 +48,13 @@
     function getConfigData() {
     var scale = document.getElementById("scale");
     var Goal = document.getElementById("stepsgoal");
-    var cityName = document.getElementById("city");
  
     var options = {
       "scale": scale.options[scale.selectedIndex].value,
       "stepsgoal": parseInt(Goal.value),
-      "cityName": cityName.options.value,
     };
     // Save for next launch
     localStorage["scale"] = options["scale"];
-    localStorage["cityName"] = options["cityName"];
     console.log('Got options: ' + JSON.stringify(options));
     return options;
   }
@@ -88,11 +79,9 @@
         
           (function() {
     var scale = document.getElementById("scale");
-    var cityName = document.getElementById("city");
     // Load any previously saved configuration, if available
     if(localStorage["scale"]) {
       scale.value = localStorage["scale"];
-      cityName.value = localStorage["cityName"];
     }
   })();
   
