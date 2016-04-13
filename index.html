@@ -38,7 +38,7 @@
 <br>
 
 <p>City Name<br>
-<input id="cityName" type="text" value="">
+<input id="city" type="text" value=" ">
 </p>
 <br>
 
@@ -54,7 +54,7 @@
     function getConfigData() {
     var scale = document.getElementById("scale");
     var Goal = document.getElementById("stepsgoal");
-    var cityName = document.getElementById("cityName");
+    var cityName = document.getElementById("city");
  
     var options = {
       "scale": scale.options[scale.selectedIndex].value,
@@ -88,7 +88,7 @@
         
           (function() {
     var scale = document.getElementById("scale");
-    var cityName = document.getElementById("cityName");
+    var cityName = document.getElementById("city");
     // Load any previously saved configuration, if available
     if(localStorage["scale"]) {
       scale.value = localStorage["scale"];
