@@ -3,11 +3,13 @@
         "KEY_DATE": 5,
         "KEY_ICON": 2,
         "KEY_SCALE": 3,
+        "KEY_STEPSGOAL": 6,
         "KEY_TEMPERATURE": 1
     },
     "capabilities": [
         "location",
-        "configurable"
+        "configurable",
+        "health"
     ],
     "companyName": "Game Time",
     "enableMultiJS": false,
@@ -15,6 +17,12 @@
     "projectType": "native",
     "resources": {
         "media": [
+            {
+                "file": "images/KING.png",
+                "name": "KING",
+                "targetPlatforms": null,
+                "type": "png"
+            },
             {
                 "file": "images/KRACKO.png",
                 "name": "KRACKO",
