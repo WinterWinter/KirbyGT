@@ -20,27 +20,70 @@
   <h1>Settings</h1>
   </div>
 
+<style>
+p.health {
+    border-radius: 0px 0px 10px 10px;
+    background-color: rgb(50,50,50);
+    padding-left:10px;
+    padding-right:10px;
+    padding-bottom:10px;
+} 
+
+p.weather {
+    background-color: rgb(50,50,50);
+    padding-left:10px;
+    padding-right:10px;
+} 
+
+h1.head {
+    border-radius: 10px 10px 0px 0px;
+    font-size:200%;
+    background-color: rgb(30,30,30);
+    padding:10px;
+}
+
+div.sections {
+    background-color: rgb(50,50,50);
+    border-radius: 10px 10px 10px 10px;
+    box-shadow: 0 0 5px #000000;
+}
+
+footer.foot {
+    padding-bottom:10px;
+    padding-left:10px;
+    font-size:80%;
+}
+
+</style>
 
   <div data-role="main" class="ui-content">
     <form method="post" action="demoform.asp">
       <fieldset class="ui-field-contain">
 
-<p>Temperature Scale
+<div class="sections">
+<h1 class="head">Health</h1>
+
+<p class="health">Step Goal<br>
+<input id="stepsgoal" type="range" class="item-slider" name="slider-1" value="10000" max="10000" min="1000" step="1000">
+</p>
+</div>
+
+<div class="sections">
+<h1 class="head">Weather</h1>
+
+<p class="weather">Temperature Scale
 <select id="scale">
 <option value="C">Celsius</option>
 <option value="F">Fahrenheit</option>
    </select>
-</p>
 
-<p>Step Goal<br>
-<input id="stepsgoal" type="range" class="item-slider" name="slider-1" value="10000" max="10000" min="1000" step="1000">
-</p>
-<br>
+<hr width="95%">
 
-<p>City<br>
+<p class="weather">
+City<br>
 <input id="city_name_choice" type="text">
-</p>
-<br>
+<footer class="foot">Leave blank for GPS location.</footer>
+</div>
 
 <p>
 <fieldset class="ui-grid-a">
