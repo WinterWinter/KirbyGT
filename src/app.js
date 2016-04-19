@@ -96,23 +96,23 @@ Pebble.addEventListener('ready', function() {
 });
   
 
-// Listen for when the watchface is opened
+  // Listen for when the watchface is opened
 Pebble.addEventListener('ready', 
   function(e) {
     console.log("PebbleKit JS ready!");
 
-    // Get the initial weather
+  // Get the initial weather
     getWeather();
   });
 
-// Listen for when an AppMessage is received
+  // Listen for when an AppMessage is received
 Pebble.addEventListener('appmessage',
   function(e) {
     console.log("AppMessage received!");
     getWeather();
   });
 
-//Show Configuration
+  //Show Configuration
 
 Pebble.addEventListener('showConfiguration', function() {
   var url = 'http://winterwinter.github.io/KirbyGT/';
@@ -130,13 +130,13 @@ Pebble.addEventListener('webviewclosed', function(e) {
   
 
                         
-// Send to the watchapp via AppMessage
+  // Send to the watchapp via AppMessage
 var dict = {
   "KEY_SCALE" : configData.scale,
   "KEY_STEPSGOAL" : configData.stepsgoal
 };
 
-// Send to the watchapp
+  // Send to the watchapp
 Pebble.sendAppMessage(dict, function() {
   console.log('Config data sent successfully!');
 }, function(e) {

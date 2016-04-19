@@ -3,12 +3,22 @@
 #define KEY_TEMPERATURE 1
 #define KEY_ICON 2
 #define KEY_SCALE 3
-#define KEY_TEST 4
+#define KEY_SCALE_OPTION 4
 #define KEY_STEPSGOAL 6
 
+/*
+Fire (Size 11512)
+Beam (Size 4755)
+Cutter (Size 4339)
+Sword (Size 3515)
+Hammer (Size 3345)
+Mike (Size 2483)
+Sleep (Size 1150)
+*/
+
 //Fix Auto Hide Issue
-//Optimize Animations
-//Try to Free more data on exit
+//Add animation for steps goal being reached
+//Fix memory fragmentation
 
 Window *window;
 
@@ -16,18 +26,17 @@ time_t auto_hide;
 
 static bool initiate_watchface = true;
 static bool animate = true;
-static bool daytime = NULL;
+static bool daytime;
 
 AppTimer *weather_timeout;
-int timeout = 60000;
+static int timeout = 60000;
 
 TextLayer *text_weather_layer;
 TextLayer *text_time_layer;
 TextLayer *text_date_layer;
 
 static Layer *steps_layer;
-static int steps;
-int stepgoal;
+int steps, steps_per_px, stepgoal;
 
 static GBitmapSequence *s_sequence = NULL;
 
@@ -38,9 +47,12 @@ static Layer *battery_layer;
 static GBitmap *foreground_image;
 static BitmapLayer *foreground_layer;
 
-int NUM_KIRBY = 7;
-int seed_images2;
-int start_number_image, random_image;
+int current_frame, temp_frame;
+int ending_frame;
+int delay;//delay between each frame is in milliseconds
+
+static int ANIMATIONS = 7;
+int seed_images2, start_number_image, random_image;
 
 #define TOTAL_POWERS 2
 static GBitmap *powers_images[TOTAL_POWERS];
@@ -54,15 +66,109 @@ static BitmapLayer *boss_layers[TOTAL_BOSS];
 static GBitmap *kirby_images[TOTAL_KIRBY];
 static BitmapLayer *kirby_layers[TOTAL_KIRBY];
 
-const int KIRBY_IMAGE_RESOURCE_IDS[] = 
-{
-  RESOURCE_ID_KIRBY_BEAM,
-  RESOURCE_ID_KIRBY_CUTTER,
-  RESOURCE_ID_KIRBY_FIRE,
-  RESOURCE_ID_KIRBY_HAMMER,
-  RESOURCE_ID_KIRBY_MIKE,
-  RESOURCE_ID_KIRBY_SWORD,
-  RESOURCE_ID_KIRBY_SLEEP,
+const int animation_frames[] = {  
+
+RESOURCE_ID_KIRBY_BEAM_1, //0
+RESOURCE_ID_KIRBY_BEAM_2,
+RESOURCE_ID_KIRBY_BEAM_3,
+RESOURCE_ID_KIRBY_BEAM_4,
+RESOURCE_ID_KIRBY_BEAM_5,
+RESOURCE_ID_KIRBY_BEAM_6,
+RESOURCE_ID_KIRBY_BEAM_7,
+RESOURCE_ID_KIRBY_BEAM_8,
+RESOURCE_ID_KIRBY_BEAM_9,
+RESOURCE_ID_KIRBY_BEAM_10,
+RESOURCE_ID_KIRBY_BEAM_11,
+RESOURCE_ID_KIRBY_BEAM_12,
+RESOURCE_ID_KIRBY_BEAM_13, //12
+  
+RESOURCE_ID_KIRBY_CUTTER_1, //13
+RESOURCE_ID_KIRBY_CUTTER_2,
+RESOURCE_ID_KIRBY_CUTTER_3,
+RESOURCE_ID_KIRBY_CUTTER_4,
+RESOURCE_ID_KIRBY_CUTTER_5,
+RESOURCE_ID_KIRBY_CUTTER_6,
+RESOURCE_ID_KIRBY_CUTTER_7,
+RESOURCE_ID_KIRBY_CUTTER_8,
+RESOURCE_ID_KIRBY_CUTTER_9,
+RESOURCE_ID_KIRBY_CUTTER_10,
+RESOURCE_ID_KIRBY_CUTTER_11,
+RESOURCE_ID_KIRBY_CUTTER_12,
+RESOURCE_ID_KIRBY_CUTTER_13,
+RESOURCE_ID_KIRBY_CUTTER_14,
+RESOURCE_ID_KIRBY_CUTTER_15,
+RESOURCE_ID_KIRBY_CUTTER_16,
+RESOURCE_ID_KIRBY_CUTTER_17, //29
+  
+RESOURCE_ID_KIRBY_FIRE_1, //30
+RESOURCE_ID_KIRBY_FIRE_2,
+RESOURCE_ID_KIRBY_FIRE_3,
+RESOURCE_ID_KIRBY_FIRE_4,
+RESOURCE_ID_KIRBY_FIRE_5,
+RESOURCE_ID_KIRBY_FIRE_6,
+RESOURCE_ID_KIRBY_FIRE_7,
+RESOURCE_ID_KIRBY_FIRE_8,
+RESOURCE_ID_KIRBY_FIRE_9,
+RESOURCE_ID_KIRBY_FIRE_10,
+RESOURCE_ID_KIRBY_FIRE_11,
+RESOURCE_ID_KIRBY_FIRE_12,
+RESOURCE_ID_KIRBY_FIRE_13,
+RESOURCE_ID_KIRBY_FIRE_14,
+RESOURCE_ID_KIRBY_FIRE_15,
+RESOURCE_ID_KIRBY_FIRE_16,
+RESOURCE_ID_KIRBY_FIRE_17,
+RESOURCE_ID_KIRBY_FIRE_18,
+RESOURCE_ID_KIRBY_FIRE_19,
+RESOURCE_ID_KIRBY_FIRE_20,
+RESOURCE_ID_KIRBY_FIRE_21,
+RESOURCE_ID_KIRBY_FIRE_22,
+RESOURCE_ID_KIRBY_FIRE_23, //52
+  
+RESOURCE_ID_KIRBY_HAMMER_1, //53
+RESOURCE_ID_KIRBY_HAMMER_2,
+RESOURCE_ID_KIRBY_HAMMER_3,
+RESOURCE_ID_KIRBY_HAMMER_4,
+RESOURCE_ID_KIRBY_HAMMER_5,
+RESOURCE_ID_KIRBY_HAMMER_6,
+RESOURCE_ID_KIRBY_HAMMER_7,
+RESOURCE_ID_KIRBY_HAMMER_8,
+RESOURCE_ID_KIRBY_HAMMER_9,
+RESOURCE_ID_KIRBY_HAMMER_10,
+RESOURCE_ID_KIRBY_HAMMER_11,
+RESOURCE_ID_KIRBY_HAMMER_12,
+RESOURCE_ID_KIRBY_HAMMER_13, //65
+  
+RESOURCE_ID_KIRBY_MIKE_1, //66
+RESOURCE_ID_KIRBY_MIKE_2,
+RESOURCE_ID_KIRBY_MIKE_3,
+RESOURCE_ID_KIRBY_MIKE_4,
+RESOURCE_ID_KIRBY_MIKE_5,
+RESOURCE_ID_KIRBY_MIKE_6,
+RESOURCE_ID_KIRBY_MIKE_7,
+RESOURCE_ID_KIRBY_MIKE_8,
+RESOURCE_ID_KIRBY_MIKE_9,
+RESOURCE_ID_KIRBY_MIKE_10,
+RESOURCE_ID_KIRBY_MIKE_11,
+RESOURCE_ID_KIRBY_MIKE_12,
+RESOURCE_ID_KIRBY_MIKE_13,
+RESOURCE_ID_KIRBY_MIKE_14, //79
+  
+RESOURCE_ID_KIRBY_SLEEP_1, //80
+RESOURCE_ID_KIRBY_SLEEP_2,
+RESOURCE_ID_KIRBY_SLEEP_3,
+RESOURCE_ID_KIRBY_SLEEP_4,
+RESOURCE_ID_KIRBY_SLEEP_5,
+RESOURCE_ID_KIRBY_SLEEP_6, //85
+  
+RESOURCE_ID_KIRBY_SWORD_1, //86
+RESOURCE_ID_KIRBY_SWORD_2,
+RESOURCE_ID_KIRBY_SWORD_3,
+RESOURCE_ID_KIRBY_SWORD_4,
+RESOURCE_ID_KIRBY_SWORD_5,
+RESOURCE_ID_KIRBY_SWORD_6,
+RESOURCE_ID_KIRBY_SWORD_7,
+RESOURCE_ID_KIRBY_SWORD_8,
+RESOURCE_ID_KIRBY_SWORD_9, //94
 };
 
 const int POWERS_IMAGE_RESOURCE_IDS[] = 
@@ -72,18 +178,17 @@ const int POWERS_IMAGE_RESOURCE_IDS[] =
   RESOURCE_ID_FIRE,
   RESOURCE_ID_HAMMER,
   RESOURCE_ID_MIKE,
+  RESOURCE_ID_SLEEP,
   RESOURCE_ID_SWORD,
-  RESOURCE_ID_SLEEP
 };
 
-static const uint32_t BOSSES_IMAGE_RESOURCE_IDS[] = 
+const int BOSSES_IMAGE_RESOURCE_IDS[] = 
 {
   RESOURCE_ID_MR_BRIGHT,
   RESOURCE_ID_KRACKO,
   RESOURCE_ID_MR_SHINE,
   RESOURCE_ID_KING,
 };
-
 
 static void load_foreground_layer(Layer *window_layer)
 {
@@ -96,18 +201,17 @@ static void load_foreground_layer(Layer *window_layer)
 
 void step_layer_update_callback(Layer *layer, GContext *ctx) 
 {
-  int stepgoal = persist_read_int(KEY_STEPSGOAL);
-  int steps_per_px = stepgoal / 50;
+  stepgoal = persist_read_int(KEY_STEPSGOAL);
+  steps_per_px = stepgoal / 50;
   graphics_context_set_compositing_mode(ctx, GCompOpAssign);
   GColor8 stepColor = GColorWhite;
   graphics_context_set_stroke_color(ctx, stepColor);
   graphics_context_set_fill_color(ctx,  stepColor);
   graphics_fill_rect(ctx, GRect(50 - (steps / steps_per_px), 0,(steps / steps_per_px), 10), 0, GCornerNone);
-
 }
 
 static void load_step_layer(Layer *window_layer)
-{   
+{
  	steps_layer = layer_create(GRect(85,13,50,10));
  	layer_set_update_proc(steps_layer, &step_layer_update_callback);  
   layer_add_child(window_layer, steps_layer);
@@ -123,8 +227,7 @@ static void load_weather_layer(Layer *window_layer)
   text_layer_set_text_alignment(text_weather_layer, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(text_weather_layer));
   layer_set_hidden(text_layer_get_layer(text_weather_layer), true);
-  }
-
+}
 
 void battery_layer_update_callback(Layer *layer, GContext *ctx) 
 {
@@ -184,77 +287,105 @@ GBitmap *old_image = *bmp_image;
 
 static void timer_handler(void *context) 
 {
-  uint32_t next_delay;
-
-  if(gbitmap_sequence_update_bitmap_next_frame(s_sequence, kirby_images[1], &next_delay)) {
+  if(current_frame < ending_frame){
+    if (kirby_images[1] != NULL) {
+      gbitmap_destroy(kirby_images[1]);
+      kirby_images[1] = NULL;
+    }
+    
+    kirby_images[1] = gbitmap_create_with_resource(animation_frames[current_frame]);
+    
     bitmap_layer_set_bitmap(kirby_layers[1], kirby_images[1]);
     layer_mark_dirty(bitmap_layer_get_layer(kirby_layers[1]));
 
-    if(animate)
-    {
-      app_timer_register(next_delay, timer_handler, NULL);
-    }
-   else {
-    gbitmap_sequence_restart(s_sequence);
-    }
-  }
-  
-  if(time(NULL) == auto_hide){
-  layer_set_hidden(text_layer_get_layer(text_date_layer), false);
-  layer_set_hidden(text_layer_get_layer(text_weather_layer), true);
-  }
-  
+    
+    current_frame++;
+    APP_LOG(APP_LOG_LEVEL_INFO, "Current frame is %d", current_frame);
+    app_timer_register(delay, timer_handler, NULL);
+  }  
 }
 
-static void stop_animation()
-{
-  animate = false;
-  gbitmap_sequence_restart(s_sequence);
-}
 
 static void load_sequence() 
 {
-  
-  if(s_sequence) {
-    gbitmap_sequence_destroy(s_sequence);
-    s_sequence = NULL;
-  }
-  if(kirby_images[1]) {
-    gbitmap_destroy(kirby_images[1]);
-    kirby_images[1] = NULL;
+  //Beam
+  if(random_image == 0){
+  current_frame = 0;
+  ending_frame = 13;
+  delay = 77;
   }
   
-  s_sequence = gbitmap_sequence_create_with_resource(KIRBY_IMAGE_RESOURCE_IDS[random_image]);
-  kirby_images[1] = gbitmap_create_blank(gbitmap_sequence_get_bitmap_size(s_sequence), GBitmapFormat8Bit);
+  //Cutter
+  if(random_image == 1){
+  current_frame = 13;
+  ending_frame = 30;
+  delay = 59;
+  }
   
-  animate = true;
-  app_timer_register(10, timer_handler, NULL);
-  app_timer_register(5000, stop_animation, NULL);
+  //Fire
+  if(random_image == 2){
+  current_frame = 31;
+  ending_frame = 52;
+  delay = 88;
+  }
+  
+  //Hammer
+  if(random_image == 3){
+  current_frame = 53;
+  ending_frame = 66;
+  delay = 77;
+  }
+  
+  //Mike
+  if(random_image == 4){
+  current_frame = 67;
+  ending_frame = 80;
+  delay = 72;
+  }
+  
+  //Sleep
+  if(random_image == 5){
+  current_frame = 81;
+  ending_frame = 86;
+  delay = 167;
+  }
+  
+  //Sword
+  if(random_image == 6){
+  current_frame = 87;
+  ending_frame = 95;
+  delay = 111;
+  }
+
+  persist_write_int(temp_frame, current_frame);
+  app_timer_register(1, timer_handler, NULL);
+  
 }
 
 static void load_kirby_layer()
 { 
-  if(random_image == 0){
-    set_container_image(&kirby_images[1], kirby_layers[1], KIRBY_IMAGE_RESOURCE_IDS[random_image], GPoint(0, 54));
+  if(random_image == 0){//Beam
+   set_container_image(&kirby_images[1], kirby_layers[1], animation_frames[0], GPoint(0, 54));
   }
-  else if(random_image == 1){
-   set_container_image(&kirby_images[1], kirby_layers[1], KIRBY_IMAGE_RESOURCE_IDS[random_image], GPoint(0, 81));
+  else if(random_image == 1){//Cutter
+   set_container_image(&kirby_images[1], kirby_layers[1], animation_frames[13], GPoint(0, 81));
   }
-  else if(random_image == 2){
-    set_container_image(&kirby_images[1], kirby_layers[1], KIRBY_IMAGE_RESOURCE_IDS[random_image], GPoint(0, 66));
+  else if(random_image == 2){//Fire
+    set_container_image(&kirby_images[1], kirby_layers[1], animation_frames[30], GPoint(0, 66));
   }
-  else if(random_image == 3){
-    set_container_image(&kirby_images[1], kirby_layers[1], KIRBY_IMAGE_RESOURCE_IDS[random_image], GPoint(5, 69));
+  else if(random_image == 3){//Hammer
+    set_container_image(&kirby_images[1], kirby_layers[1], animation_frames[53], GPoint(5, 69));
   }
-  else if(random_image == 4){
-    set_container_image(&kirby_images[1], kirby_layers[1], KIRBY_IMAGE_RESOURCE_IDS[random_image], GPoint(0, 80));
+  else if(random_image == 4){//Mike
+    set_container_image(&kirby_images[1], kirby_layers[1], animation_frames[66], GPoint(0, 80));
   }
-  else if(random_image == 5){
-    set_container_image(&kirby_images[1], kirby_layers[1], KIRBY_IMAGE_RESOURCE_IDS[random_image], GPoint(0, 69));
+  else if(random_image == 5){//Sleep
+    set_container_image(&kirby_images[1], kirby_layers[1], animation_frames[80], GPoint(13, 75));
   }
-  else if(random_image == 6){
-    set_container_image(&kirby_images[1], kirby_layers[1], KIRBY_IMAGE_RESOURCE_IDS[random_image], GPoint(13, 75));
+  else if(random_image == 6){//Sword
+    set_container_image(&kirby_images[1], kirby_layers[1], animation_frames[86], GPoint(0, 69));
   }
+
 }
 
 static void update_time()
@@ -286,8 +417,8 @@ static void update_time()
 static void update_bg_color(struct tm *current_time) 
 {
   if (current_time->tm_hour >= 12 && current_time->tm_hour < 17){
-  window_set_background_color(window, GColorFromRGB(0,170,255));
-  daytime=true;
+    window_set_background_color(window, GColorFromRGB(0,170,255));
+    daytime=true;
   }
   else if (current_time->tm_hour >= 5 && current_time->tm_hour < 12){
     window_set_background_color(window, GColorFromRGB(255,0,128));
@@ -300,7 +431,7 @@ static void update_bg_color(struct tm *current_time)
   else if (current_time->tm_hour >= 21 || current_time->tm_hour < 5){
     window_set_background_color(window, GColorFromRGB(0,0,85));
     daytime=false;
-  } 
+  }
 }
 
 static void weather_ended() 
@@ -332,23 +463,21 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   Tuple *t = dict_read_first(iterator);
 
   int temperature;
-  int Kelvin = persist_read_int(KEY_TEMPERATURE);
-  int finalTemp = Kelvin;
-  int test = persist_read_int(KEY_TEST);
+  int finalTemp;
+  int scale_option = persist_read_int(KEY_SCALE_OPTION);
   
-    
   while(t != NULL) {
     switch(t->key) {
     case KEY_SCALE:
       if(strcmp(t->value->cstring, "F") == 0){
-        persist_write_int(KEY_TEST, 0);
+        persist_write_int(KEY_SCALE_OPTION, 0);
         DictionaryIterator *iter;
         app_message_outbox_begin(&iter);
         dict_write_uint8(iter, 0, 0);
         app_message_outbox_send();
       }
       else if(strcmp(t->value->cstring, "C") == 0){
-        persist_write_int(KEY_TEST, 1);
+        persist_write_int(KEY_SCALE_OPTION, 1);
         DictionaryIterator *iter;
         app_message_outbox_begin(&iter);
         dict_write_uint8(iter, 0, 0);
@@ -357,18 +486,14 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
       break;
     case KEY_TEMPERATURE:
       
-      if(test == 0){
-      temperature = (int)t->value->int32;
-      persist_write_int(KEY_TEMPERATURE, temperature);
-      Kelvin = persist_read_int(KEY_TEMPERATURE);
-      finalTemp = (Kelvin - 273.15) * 1.8 + 32;
+      if(scale_option == 0){
+      temperature = t->value->int32;
+      finalTemp = (temperature - 273.15) * 1.8 + 32;
       snprintf(temperature_buffer, sizeof(temperature_buffer), "%d°", finalTemp);
       }
-      else if(test == 1){
-      temperature = (int)t->value->int32;
-      persist_write_int(KEY_TEMPERATURE, temperature);
-      Kelvin = persist_read_int(KEY_TEMPERATURE);
-      finalTemp = Kelvin - 273.15;
+      else if(scale_option == 1){
+      temperature = t->value->int32;
+      finalTemp = temperature - 273.15;
       snprintf(temperature_buffer, sizeof(temperature_buffer), "%d°", finalTemp);
       }
       break;
@@ -420,37 +545,45 @@ static void outbox_sent_callback(DictionaryIterator *iterator, void *context)
 
 static void update_display(struct tm *current_time) 
 {
-    if( ((current_time->tm_min == 0) && (current_time->tm_sec == 0)) || (initiate_watchface == true) ){ 
+  start_number_image = (current_time->tm_sec) + (current_time->tm_min) + ANIMATIONS;
 
-  if (initiate_watchface){
-  start_number_image = (current_time->tm_sec) + (current_time->tm_min) + NUM_KIRBY;
-}
-    
   static long seed_images = 100;
   seed_images  = (((seed_images * 214013L + 2531011L) >> 16) & 32767);
   seed_images2 = seed_images + start_number_image;
-  random_image = (seed_images2 % NUM_KIRBY);
+  random_image = (seed_images2 % ANIMATIONS);
   //APP_LOG(APP_LOG_LEVEL_DEBUG, "random character generated [#%d].", random_image);
 
-load_sequence();
-set_container_image(&powers_images[1], powers_layers[1], POWERS_IMAGE_RESOURCE_IDS[random_image], GPoint(14, 26));
-load_kirby_layer();
-  }
+  load_sequence();
+  set_container_image(&powers_images[1], powers_layers[1], POWERS_IMAGE_RESOURCE_IDS[random_image], GPoint(14, 26));
+  load_kirby_layer();
+  update_bg_color(current_time);
 }
 
 static void handle_minute_tick(struct tm *tick_time, TimeUnits units_changed)
 {    
-  update_time();
-  update_bg_color(tick_time); 
+  if( (units_changed & SECOND_UNIT) != 0 ) {
+    if(time(NULL) == auto_hide){
+      layer_set_hidden(text_layer_get_layer(text_date_layer), false);
+      layer_set_hidden(text_layer_get_layer(text_weather_layer), true);
+    } 
+  }
   
-  if(tick_time->tm_min % 30 == 0) {
+  if( (units_changed & MINUTE_UNIT) != 0 ) {
+
+    update_time();
+    
+    if(tick_time->tm_min % 30 == 0) {
     DictionaryIterator *iter;
     app_message_outbox_begin(&iter);
     dict_write_uint8(iter, 0, 0);
     app_message_outbox_send();
     weather_timeout = app_timer_register(timeout, weather_ended, NULL);
+    }
  }
-  update_display(tick_time);
+  
+    if( ((tick_time->tm_min == 0) && (tick_time->tm_sec == 0)) || (initiate_watchface == true) ){
+      update_display(tick_time);
+    }
 }
 
 static void handle_health(HealthEventType event, void *context) 
@@ -496,15 +629,10 @@ static void handle_bluetooth(bool connected)
 
 static void handle_tap(AccelAxisType axis, int32_t direction)
 {
+  load_sequence();
   auto_hide = time(NULL) + 4;
   layer_set_hidden(text_layer_get_layer(text_date_layer), true);
   layer_set_hidden(text_layer_get_layer(text_weather_layer), false);
-  
-  if(!animate){
-  animate = true;
-  app_timer_register(10, timer_handler, NULL);
-  app_timer_register(5000, stop_animation, NULL);
-  }
 }
 
 static void main_window_load(Window *window) 
@@ -521,39 +649,38 @@ static void main_window_load(Window *window)
 
 static void main_window_unload(Window *window) 
 {  
+   gbitmap_destroy(foreground_image);
+   bitmap_layer_destroy(foreground_layer);
   
-      gbitmap_destroy(foreground_image);
-      bitmap_layer_destroy(foreground_layer);
+   layer_destroy(steps_layer);
   
-      layer_destroy(steps_layer);
+   text_layer_destroy(text_weather_layer);
   
-      text_layer_destroy(text_weather_layer);
+   layer_destroy(battery_layer);
   
-      layer_destroy(battery_layer);
+   text_layer_destroy(text_time_layer);
   
-      text_layer_destroy(text_time_layer);
+   text_layer_destroy(text_date_layer);
   
-      text_layer_destroy(text_date_layer);
-  
-     	for (int i = 0; i < TOTAL_POWERS; i++) {
+   for (int i = 0; i < TOTAL_POWERS; i++) {
      	layer_remove_from_parent(bitmap_layer_get_layer(powers_layers[i]));
      	gbitmap_destroy(powers_images[i]);
      	bitmap_layer_destroy(powers_layers[i]);
- 	    }
+ 	 }
   
-  	  for (int i = 0; i < TOTAL_KIRBY; i++) {
+   for (int i = 0; i < TOTAL_KIRBY; i++) {
      	layer_remove_from_parent(bitmap_layer_get_layer(kirby_layers[i]));
      	gbitmap_destroy(kirby_images[i]);
      	bitmap_layer_destroy(kirby_layers[i]);
- 	    }  
+ 	 }  
   
-      gbitmap_sequence_destroy(s_sequence);
+   gbitmap_sequence_destroy(s_sequence);
   
-      for (int i = 0; i < TOTAL_BOSS; i++) {
+   for (int i = 0; i < TOTAL_BOSS; i++) {
      	layer_remove_from_parent(bitmap_layer_get_layer(boss_layers[i]));
      	gbitmap_destroy(boss_images[i]);
      	bitmap_layer_destroy(boss_layers[i]);
- 	    }
+ 	 }
 }
 
 void handle_init(void) 
@@ -591,7 +718,8 @@ for (int i = 0; i < TOTAL_BOSS; ++i) {
 }
 
 	handle_minute_tick(tick_time, MINUTE_UNIT);
- 	tick_timer_service_subscribe(MINUTE_UNIT, handle_minute_tick);
+  
+ 	tick_timer_service_subscribe(MINUTE_UNIT | SECOND_UNIT, handle_minute_tick);
   
   health_service_events_subscribe(handle_health, NULL);
   battery_state_service_subscribe (&handle_battery);
@@ -600,7 +728,6 @@ for (int i = 0; i < TOTAL_BOSS; ++i) {
   bluetooth_connection_service_subscribe(&handle_bluetooth);
   
   accel_tap_service_subscribe(&handle_tap);
-  app_timer_register(5000, stop_animation, NULL);
   
 	//APP_LOG(APP_LOG_LEVEL_DEBUG, "Just pushed a window!");
   
