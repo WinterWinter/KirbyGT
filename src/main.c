@@ -47,7 +47,8 @@ static Layer *battery_layer;
 static GBitmap *foreground_image;
 static BitmapLayer *foreground_layer;
 
-int current_frame, temp_frame;
+int replay = 2;
+int current_frame, starting_frame;
 int ending_frame;
 int delay;//delay between each frame is in milliseconds
 
@@ -287,7 +288,12 @@ GBitmap *old_image = *bmp_image;
 
 static void timer_handler(void *context) 
 {
-  if(current_frame < ending_frame){
+  
+  if(current_frame < ending_frame || replay > 0){
+    if(current_frame == ending_frame){
+     current_frame = starting_frame;
+     replay--;
+    }
     if (kirby_images[1] != NULL) {
       gbitmap_destroy(kirby_images[1]);
       kirby_images[1] = NULL;
@@ -298,11 +304,10 @@ static void timer_handler(void *context)
     bitmap_layer_set_bitmap(kirby_layers[1], kirby_images[1]);
     layer_mark_dirty(bitmap_layer_get_layer(kirby_layers[1]));
 
-    
     current_frame++;
-    APP_LOG(APP_LOG_LEVEL_INFO, "Current frame is %d", current_frame);
     app_timer_register(delay, timer_handler, NULL);
   }  
+  
 }
 
 
@@ -357,9 +362,8 @@ static void load_sequence()
   delay = 111;
   }
 
-  persist_write_int(temp_frame, current_frame);
+  starting_frame = current_frame;
   app_timer_register(1, timer_handler, NULL);
-  
 }
 
 static void load_kirby_layer()
@@ -437,10 +441,10 @@ static void update_bg_color(struct tm *current_time)
 static void weather_ended() 
 {
 	// If the weather can't be updated show the error icon
-	APP_LOG(APP_LOG_LEVEL_INFO, "Weather timer ended");
+	//APP_LOG(APP_LOG_LEVEL_INFO, "Weather timer ended");
 	
 	if (weather_timeout != NULL) {
-		APP_LOG(APP_LOG_LEVEL_INFO, "Weather timer is not NULL");
+		//APP_LOG(APP_LOG_LEVEL_INFO, "Weather timer is not NULL");
     set_container_image(&boss_images[1], boss_layers[1], BOSSES_IMAGE_RESOURCE_IDS[3], GPoint(82, 53));
 	}
 }
@@ -449,7 +453,7 @@ static void cancel_weather_timeout()
 {
 	// Cancel the timeout once weather is received
 	if (weather_timeout != NULL) {
-			APP_LOG(APP_LOG_LEVEL_INFO, "Cancelling weather timer");
+			//APP_LOG(APP_LOG_LEVEL_INFO, "Cancelling weather timer");
 			app_timer_cancel(weather_timeout);
 			weather_timeout = NULL;
 	}
@@ -516,7 +520,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
       case KEY_STEPSGOAL:
       
       stepgoal = t->value->int16;
-		  APP_LOG(APP_LOG_LEVEL_INFO, "stepgoal is %d", stepgoal);
+		  //APP_LOG(APP_LOG_LEVEL_INFO, "stepgoal is %d", stepgoal);
 		  persist_write_int(KEY_STEPSGOAL, stepgoal);
       break;
   }
@@ -628,7 +632,8 @@ static void handle_bluetooth(bool connected)
 }
 
 static void handle_tap(AccelAxisType axis, int32_t direction)
-{
+{ 
+  replay = 2;
   load_sequence();
   auto_hide = time(NULL) + 4;
   layer_set_hidden(text_layer_get_layer(text_date_layer), true);
