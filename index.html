@@ -137,7 +137,8 @@ City<br>
     if(localStorage["scale"]) {
       scale.value = localStorage["scale"];
       city_name.value = localStorage["city"];
-      parseInt(Goal.value) = localStorage["stepsgoal"];
+      Goal.value = localStorage["stepsgoal"];
+      Goal.value = parseInt(Goal.value);
     }
   })();
   
