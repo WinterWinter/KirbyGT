@@ -132,13 +132,13 @@ City<br>
           (function() {
     var scale = document.getElementById("scale");
     var city_name = document.getElementById("city_name_choice");
-
+    var Goal = document.getElementById("stepsgoal");
     
     // Load any previously saved configuration, if available
     if(localStorage["scale"]) {
       scale.value = localStorage["scale"];
       city_name.value = localStorage["city"];
-
+      Goal.value = localStorage["stepsgoal"];
     }
   })();
   
