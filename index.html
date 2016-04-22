@@ -106,7 +106,7 @@ function getConfigData() {
   // Save for next launch
   localStorage["scale"] = options["scale"];
   localStorage["city"] = options["city"];
-  localStorage["stepsgoal"] = document.getElementById("stepsgoal");
+  localStorage["stepsgoal"] = options["stepsgoal"];
   console.log('Got options: ' + JSON.stringify(options));
   return options;
 }
@@ -141,6 +141,7 @@ submitButton.addEventListener("click", function() {
     scale.value = localStorage["scale"];
     city_name.value = localStorage["city"];
     Goal.value = localStorage["stepgoals"];
+    alert(Goal.value);
   }
 })();
 
