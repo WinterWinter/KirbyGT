@@ -106,7 +106,7 @@ function getConfigData() {
   // Save for next launch
   localStorage["scale"] = options["scale"];
   localStorage["city"] = options["city"];
-  localStorage["stepsgoal"] = options["stepsgoal"];
+  localStorage["stepsgoal"] = document.getElementById("stepsgoal");
   console.log('Got options: ' + JSON.stringify(options));
   return options;
 }
@@ -140,8 +140,7 @@ submitButton.addEventListener("click", function() {
   if (localStorage["scale"]) {
     scale.value = localStorage["scale"];
     city_name.value = localStorage["city"];
-    Goal.value = localStorage["stepsgoal"];
-
+    Goal.value = localStorage["stepgoals"];
   }
 })();
 
@@ -151,7 +150,7 @@ $("#b-cancel").click(function() {
   document.location = "pebblejs://close";
 });
 
-        
+
     </script>
   </body>
 </html>
