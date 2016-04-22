@@ -11,6 +11,8 @@
   <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile.structure-1.4.5.min.css" /> 
   <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script> 
   <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script> 
+  <script src="https://raw.githubusercontent.com/Upstatement/jquery-total-storage/master/jquery.total-storage.js"></script>
+  <script src="https://raw.githubusercontent.com/Upstatement/jquery-total-storage/master/jquery.total-storage.min.js"></script>
     
   </head>
   <body>
@@ -106,7 +108,7 @@ City<br>
     // Save for next launch
     localStorage["scale"] = options["scale"];
     localStorage["city"] = options["city"];
-    localStorage["stepsgoal"] = options["stepsgoal"];
+    $.totalStorage("stepsgoal", parseInt(Goal.value);
     console.log('Got options: ' + JSON.stringify(options));
     return options;
   }
@@ -138,7 +140,7 @@ City<br>
     if(localStorage["scale"]) {
       scale.value = localStorage["scale"];
       city_name.value = localStorage["city"];
-      Goal.value = JSON.parse(localStorage["stepsgoal"]);
+      Goal.value = $.totalStorage("stepsgoal");
     }
   })();
   
