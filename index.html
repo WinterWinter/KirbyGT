@@ -202,6 +202,13 @@ input[type=range]:focus::-ms-fill-upper {
 
   <div class="sections">
     <h1 class="head">Weather</h1>
+    
+    <p class="weather">API Key
+        <input id="apiKey" type="text">
+        <footer class="foot">An API key is required to fetch OpenWeatherMap data. These can be freely obtained from OpenWeatherMap.org.</footer>
+      </p>
+      
+      <hr width="95%">
 
     <p class="weather">Temperature Scale
       <select id="scale">
@@ -229,17 +236,20 @@ input[type=range]:focus::-ms-fill-upper {
    var scale = document.getElementById("scale");
    var Goal = document.getElementById("stepsgoal");
    var city_name = document.getElementById("city_name_choice");
+   var apiKey = document.getElementById("apiKey");
 
    // Make a data object to be sent, coercing value types to integers
    var options = {
      "scale": scale.options[scale.selectedIndex].value,
      "stepsgoal": parseInt(Goal.value),
-     "city": city_name.value
+     "city": city_name.value,
+     "apiKey": apiKey.value
    };
 
    localStorage["scale"] = options["scale"];
    localStorage["city"] = options["city"];
    localStorage["stepsgoal"] = options["stepsgoal"];
+   localStorage["apiKey"] = options["apiKey"];
 
    // Determine the correct return URL (emulator vs real watch)
    function getQueryParam(variable, defaultValue) {
@@ -264,6 +274,7 @@ input[type=range]:focus::-ms-fill-upper {
    var city_name = document.getElementById("city_name_choice");
    var Goal = document.getElementById("stepsgoal");
    var Goal_Text = document.getElementById("textInput");
+   var apiKey = document.getElementById("apiKey");
 
    // Load any previously saved configuration, if available
    if (localStorage["scale"]) {
@@ -271,6 +282,7 @@ input[type=range]:focus::-ms-fill-upper {
      city_name.value = localStorage["city"];
      stepsgoal.value = localStorage["stepsgoal"];
      textInput.value = localStorage["stepsgoal"];
+     apiKey.value = localStorage["apiKey"];
    }
  })();
 
